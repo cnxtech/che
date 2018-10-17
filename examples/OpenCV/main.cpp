@@ -33,7 +33,7 @@ const double dHeight = 480;        //the height of frames of the video
 const int initial_motor_speed = 20;
 
 int main() {
-
+    init();
     PID_incremental pid1(0.35, 0.65, 0.005);
 //    float target=1000.0;
 //    float actual=0;
@@ -125,11 +125,11 @@ int main() {
         float target = 0;
         float actual = minRad;
         float pid_increment = 0.0;
-        cout << "target=" << target << endl;
+        cout << "target=" << target << "actual=" << fixed << setprecision(2) << actual*180/PI << endl;
         pid_increment = pid1.pid_control(target, actual);
 
-        int left_motor_speed = initial_motor_speed - pid_increment;
-        int right_motor_speed = initial_motor_speed + pid_increment;
+        int left_motor_speed = static_cast<int>(initial_motor_speed - pid_increment);
+        int right_motor_speed = static_cast<int>(initial_motor_speed + pid_increment);
 
         left_motor_speed = min(left_motor_speed, 50);
         right_motor_speed = min(right_motor_speed, 50);
