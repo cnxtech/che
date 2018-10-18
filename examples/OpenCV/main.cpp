@@ -27,13 +27,13 @@ const int CANNY_LOWER_BOUND = 50;
 const int CANNY_UPPER_BOUND = 250;
 const int HOUGH_THRESHOLD = 80;
 
-const double dWidth = 640;            //the width of frames of the video
+const double dWidth = 960;            //the width of frames of the video
 const double dHeight = 480;        //the height of frames of the video
 
 const int initial_motor_speed = 20;
 
 int main() {
-    init();
+//    init();
     PID_incremental pid1(0.35, 0.65, 0.005);
 //    float target=1000.0;
 //    float actual=0;
@@ -137,8 +137,8 @@ int main() {
         left_motor_speed = max(left_motor_speed, 0);
         right_motor_speed = max(right_motor_speed, 0);
 
-        controlLeft(FORWARD, left_motor_speed);
-        controlRight(FORWARD, right_motor_speed);
+//        controlLeft(FORWARD, left_motor_speed);
+//        controlRight(FORWARD, right_motor_speed);
 
         lines.clear();
         waitKey(1);
