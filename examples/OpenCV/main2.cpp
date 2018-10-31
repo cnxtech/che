@@ -1,5 +1,4 @@
 #include <iostream>
-
 #include "GPIOlib.h"
 #include <opencv2/opencv.hpp>
 
@@ -8,21 +7,24 @@ using namespace GPIO;
 using namespace cv;
 
 const bool DEBUG = true;
-const int MAX_SPEED = 50;
-const int TURN_SPEED = 10;
-// const int MAX_ANGLE = 30;
-const float THRESHOLD = 0.03;
+//const int MAX_SPEED = 50;
+//const int TURN_SPEED = 10;
+//const int TURN_ANGLE = 5;
+//const float THRESHOLD = 0.03;
 
 int main()
 {
+    int MAX_SPEED, TURN_SPEED, TURN_ANGLE;
+    float THRESHOLD;
+    cin >> MAX_SPEED >> TURN_SPEED >> TURN_ANGLE >> THRESHOLD;
     VideoCapture capture(0);
     if (!capture.isOpened())
     {
         cerr << "Failed to open camera!";
         return 1;
     }
-    capture.set(CV_CAP_PROP_FRAME_WIDTH, 320);
-    capture.set(CV_CAP_PROP_FRAME_HEIGHT, 240);
+    capture.set(CV_CAP_PROP_FRAME_WIDTH, 640);
+    capture.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
     // capture.set(CV_CAP_PROP_FPS, 25);
     int dWidth = capture.get(CV_CAP_PROP_FRAME_WIDTH);
     int dHeight = capture.get(CV_CAP_PROP_FRAME_HEIGHT);
@@ -59,12 +61,12 @@ int main()
             cycle++;
             continue;
         }
-        // imwrite("camera.jpg", image);
-        // imshow("Camera", image);
+        imwrite("camera.jpg", image);
+        imshow("Camera", image);
 
         cvtColor(image, image, CV_BGR2GRAY);
         threshold(image, image, 80, 255, THRESH_BINARY);
-        // imshow("Processed", image);
+        imshow("Processed", image);
 
         imgLeft = image(roiL);
         imgRight = image(roiR);
@@ -75,7 +77,7 @@ int main()
 
         if (rateL < THRESHOLD && rateR < THRESHOLD && state != 0)
         {
-            //turnTo(i0);
+            turnTo(0);
             controlLeft(FORWARD, MAX_SPEED);
             controlRight(FORWARD, MAX_SPEED);
             state = 0;
@@ -86,9 +88,9 @@ int main()
         {
             //turnTo(MAX_ANGLE);
             init();
-            turnTo(5);
+            turnTo(TURN_ANGLE);
             //controlLeft(FORWARD, TURN_SPEED);
-            controlRight(BACKWARD, TURN_SPEED);
+            controlLeft(FORWARD, TURN_SPEED);
             state = 1;
             if (DEBUG)
                 cout << "State set to 1" << endl;
@@ -98,8 +100,8 @@ int main()
         {
             //turnTo(-MAX_ANGLE);
             init();
-            turnTo(-5);
-            controlLeft(BACKWARD, TURN_SPEED);
+            turnTo(-TURN_ANGLE);
+            controlRight(FORWARD, TURN_SPEED);
             //controlRight(FORWARD, TURN_SPEED);
             state = 2;
             if (DEBUG)
