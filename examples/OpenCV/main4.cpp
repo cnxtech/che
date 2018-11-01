@@ -19,8 +19,12 @@ int main()
 {
     int MAX_SPEED, TURN_SPEED, TURN_ANGLE, BACK_SPEED, BACK_TIME;
     float THRESHOLD;
+    int state = -1;
+    bool end = false;
+
     cout<< "max_speed turn_speed turn_angle threshold back_speed back_time"
     cin >> MAX_SPEED >> TURN_SPEED >> TURN_ANGLE >> THRESHOLD>> BACK_SPEED >> BACK_TIME;
+
     VideoCapture capture(0);
     if (!capture.isOpened())
     {
@@ -35,12 +39,9 @@ int main()
     if (DEBUG)
         cout << "Frame Size: " << dWidth << "x" << dHeight << endl;
 
-    cout << "Start engine..." << endl;
     init();
     turnTo(0);
-
-    int state = -1;
-    bool end = false;
+    cout << "Che is Ready? Go!" << endl;
 
     Mat image, imgLeft, imgRight;
     Rect roiL(0, 0, dWidth / 2, dHeight);
