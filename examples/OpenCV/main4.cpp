@@ -10,6 +10,7 @@ using namespace GPIO;
 using namespace cv;
 
 const bool DEBUG = true;
+const int RUSH_SPEED = 20;
 //const int MAX_SPEED = 50;
 //const int TURN_SPEED = 10;
 //const int TURN_ANGLE = 5;
@@ -19,11 +20,12 @@ int main()
 {
     int MAX_SPEED, TURN_SPEED, TURN_ANGLE, BACK_SPEED, BACK_TIME;
     float THRESHOLD;
+    float RUSH_THRESHOLD;
     int state = -1;
     bool end = false;
 
-    cout<< "max_speed turn_speed turn_angle threshold back_speed back_time"
-    cin >> MAX_SPEED >> TURN_SPEED >> TURN_ANGLE >> THRESHOLD>> BACK_SPEED >> BACK_TIME;
+    cout<< "max_speed turn_speed turn_angle threshold back_speed back_time";
+    cin >> MAX_SPEED >> TURN_SPEED >> TURN_ANGLE >> THRESHOLD>> BACK_SPEED >> BACK_TIME >> RUSH_THRESHOLD;
 
     VideoCapture capture(0);
     if (!capture.isOpened())
@@ -31,8 +33,8 @@ int main()
         cerr << "Failed to open camera!";
         return 1;
     }
-    capture.set(CV_CAP_PROP_FRAME_WIDTH, 640);
-    capture.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
+    //capture.set(CV_CAP_PROP_FRAME_WIDTH, 960);
+    //capture.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
     // capture.set(CV_CAP_PROP_FPS, 25);
     int dWidth = capture.get(CV_CAP_PROP_FRAME_WIDTH);
     int dHeight = capture.get(CV_CAP_PROP_FRAME_HEIGHT);
@@ -66,7 +68,7 @@ int main()
         if (DEBUG)
             cout << "L=" << rateL << ", R=" << rateR << ", ts=" << capture.get(CV_CAP_PROP_POS_MSEC) << endl;
 
-        if (rateL < THRESHOLD && rateR < THRESHOLD && state != 0)
+        if (rateL <= THRESHOLD && rateR <= THRESHOLD && state != 0 && (rateL > RUSH_THRESHOLD || rateR > RUSH_THRESHOLD)) 
         {
             turnTo(0);
             controlLeft(FORWARD, MAX_SPEED);
@@ -97,18 +99,20 @@ int main()
             //controlRight(FORWARD, TURN_SPEED);
             state = 2;
         }
-        else if (rateL >= THRESHOLD && rateR >= THRESHOLD)
+        else if (rateL <= RUSH_THRESHOLD && rateR <= RUSH_THRESHOLD)
         {
             if (!end)
             {
                 end = true;
                 init();
                 turnTo(0);
-                controlLeft(FORWARD, MAX_SPEED);
-                controlRight(FORWARD, MAX_SPEED);
-                delay(500);
+                controlLeft(FORWARD, RUSH_SPEED);
+                controlRight(FORWARD, RUSH_SPEED);
+                delay(1000);
                 init();
-                return 0;
+            	controlLeft(FORWARD, 0);
+		controlRight(FORWARD, 0);
+	    	return 0;
             }
         }
         waitKey(1);

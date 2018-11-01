@@ -42,6 +42,10 @@ int main()
     Mat image, imgLeft, imgRight;
     Rect roiL(0, 0, dWidth / 2, dHeight);
     Rect roiR(dWidth / 2, 0, dWidth / 2, dHeight);
+	capture >> image;
+	cvtColor(image, image, CV_BGR2GRAY);
+        threshold(image, image, 80, 255, THRESH_BINARY);
+        
 	imgLeft = image(roiL);
 	imgRight = image(roiR);
 	float initL = 1 - countNonZero(imgLeft);
